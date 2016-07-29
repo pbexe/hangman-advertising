@@ -20,7 +20,7 @@ http.listen(3000, function(){
   console.log('listening on *:3000');
 });
 
-fs.readFile("/Users/finnian/Pictures/profile.jpg", function(err, squid){
+fs.readFile("testimg.jpg", function(err, squid){
 	if (err) throw err;
 	img = new Image;
 	img.src = squid;
