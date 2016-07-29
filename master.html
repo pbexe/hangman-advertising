@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Page</title>
+</head>
+
+<body>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="button" value="Configure" id="configure" />
+        <input type="file" value="Render" id="render" />
+    </form>
+
+    <script src="/socket.io/socket.io.js"></script>
+	<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+        $("#configure").click(function() {
+            $.get("/configure");
+        });
+
+        $("#render").click(function() {
+            $.get("/render");
+        });
+    </script>
+</body>
+</html>

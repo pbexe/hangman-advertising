@@ -18,12 +18,17 @@
     <script>
         var socket = io();
         var dt_latest = 0;
+
+        $("render").css("visibility", "visible");
+        $("configure").css("visibility", "hidden");
+
         socket.on("connect", function(packet){
         	/*socket.emit("handshake", {
         		width: $(document).width(),
         		height: $(document).height()
         	});*/
         });
+
         socket.on("configure", function(packet){
             socket.emit("get code", {}, function(packet){
                 console.log(packet);
@@ -31,6 +36,11 @@
                 $("configure").css("visibility", "visible");
                 $("render").css("visibility", "hidden");
             });
+        });
+
+        socket.on("render", function() {
+            $("render").css("visibility", "visible");
+            $("configure").css("visibility", "hidden");
         });
         var count = 0;
 

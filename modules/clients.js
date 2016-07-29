@@ -4,11 +4,27 @@ var io = require('socket.io')(http);
 var QRCode = require('qrcode');
 
 var socketClients = [];
+var rendering = true;
 
 // Configuring Routes
 app.get('/', function(req, res){
 	console.log("Sending root");
 	res.sendfile('slave.html');
+});
+
+app.get('/master', function(req, res){
+	console.log("Sending root");
+	res.sendfile('master.html');
+});
+
+app.get("/configure", function(req, res) {
+    rendering = false;
+    io.emit("configure");
+});
+
+app.get("/render", function(req, res) {
+    rendering = true;
+    io.emit("render");
 });
 
 // Socket.IO
@@ -24,15 +40,6 @@ io.on('connection', function(socket){
 			callback(url);
 		});
 	});
-	/*socket.on("handshake", function(packet){
-		process.send(JSON.stringify({
-			type: "constraints",
-			contents: {
-				width: packet.width,
-				height: packet.height
-			}
-		}));
-	});*/
 });
 
 // Create HTTP Server
@@ -41,5 +48,7 @@ http.listen(3000, function(){
 });
 
 process.on("message", function(message) {
-    io.emit("frame", JSON.parse(message));
+    if (rendering == true) {
+        io.emit("frame", JSON.parse(message));
+    }
 });
