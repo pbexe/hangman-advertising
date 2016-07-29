@@ -28,21 +28,13 @@ var dt = 0;
 setInterval(function() {
     var renderer = child_process.fork("modules/render.js");
 
-    renderer.send(JSON.stringify({
-    	type: "dt",
-    	contents: dt
-    }));
+    renderer.send(dt);
 
     dt++;
 
     renderer.on("message", function(frame) {
-        communicator.send(JSON.stringify({
-        	type: "frame",
-        	contents: {
-        		frame: frame.frame,
-        		dt: frame.dt, time: Date.now()
-        	}
-        }));
+        communicator.send(JSON.stringify({ frame: frame.frame,
+        		dt: frame.dt, time: Date.now() }));
         renderer.kill("SIGINT");
     });
 }, 33);

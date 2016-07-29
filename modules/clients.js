@@ -10,7 +10,7 @@ app.get('/', function(req, res){
 
 // Socket.IO
 io.on('connection', function(socket){
-	socket.on("handshake", function(packet){
+	/*socket.on("handshake", function(packet){
 		process.send(JSON.stringify({
 			type: "constraints",
 			contents: {
@@ -18,7 +18,7 @@ io.on('connection', function(socket){
 				height: packet.height
 			}
 		}));
-	});
+	});*/
 });
 
 // Create HTTP Server
@@ -27,8 +27,5 @@ http.listen(3000, function(){
 });
 
 process.on("message", function(message) {
-	message = JSON.parse(message);
-	if (message.type == "frame"){
-		io.emit("frame", message.contents);
-	}
+    io.emit("frame", JSON.parse(message));
 });
