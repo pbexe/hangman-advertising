@@ -1,6 +1,8 @@
 var fs = require("fs");
 var child_process = require('child_process');
 
+var fps = 1;
+
 var max_constraints = {width: 0, height: 0};
 
 // Clients
@@ -37,4 +39,4 @@ setInterval(function() {
         		dt: frame.dt, time: Date.now() }));
         renderer.kill("SIGINT");
     });
-}, 33);
+}, 1000/fps);
