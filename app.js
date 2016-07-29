@@ -18,4 +18,4 @@ setInterval(function() {
         clients.send(JSON.stringify({ frame: frame.frame, dt: frame.dt, time: Date.now() }));
         slave.kill("SIGINT");
     });
-}, 42);
+}, 33);
