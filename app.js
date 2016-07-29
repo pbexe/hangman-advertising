@@ -21,8 +21,8 @@ setInterval(function() {
     slave.send(dt);
     dt++;
 
-    slave.on("message", function(frame, dt_id) {
-        io.emit("frame", { frame: frame, dt: dt_id });
+    slave.on("message", function(frame) {
+        io.emit("frame", { frame: frame.frame, dt: frame.dt });
         slave.kill("SIGINT");
     });
 }, 42);

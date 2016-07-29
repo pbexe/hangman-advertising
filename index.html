@@ -10,9 +10,15 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         var socket = io();
+        var dt_latest = 0;
         socket.on("frame", function(packet){
             console.log(packet);
-            $("img").attr("src", packet.frame);
+            if (dt_latest <= packet.dt) {
+                dt_latest = packet.dt;
+                $("img").attr("src", packet.frame);
+            } else {
+                console.log("Frame Skip");
+            }
         });
     </script>
 </body>
