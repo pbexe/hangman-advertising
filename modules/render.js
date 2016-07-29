@@ -2,7 +2,7 @@ var Canvas = require('canvas');
 
 process.on("message", function(dt) {
     var Image = Canvas.Image;
-    var canvas = new Canvas(800, 800);
+    var canvas = new Canvas(800, 800, "svg");
 
     var bg = canvas.getContext("2d");
     bg.rect(0,0, canvas.width, canvas.height);
@@ -26,5 +26,8 @@ process.on("message", function(dt) {
     context.lineTo(50 + te.width, 102);
     context.stroke();
 
-    process.send({ frame: canvas.toDataURL(), dt: dt });
+    //require("fs").writeFile("out.svg", canvas.toBuffer());
+    //console.log("data:image/svg+xml;utf8," + canvas.toBuffer().toString().replace(/[\r\n]/g, "").replace('<?xml version="1.0" encoding="UTF-8"?>', ""));
+
+    process.send({ frame: "data:image/svg+xml;utf8," + canvas.toBuffer().toString().replace(/[\r\n]/g, "").replace('<?xml version="1.0" encoding="UTF-8"?>', ""), dt: dt });
 });

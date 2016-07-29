@@ -34,4 +34,4 @@ setInterval(function() {
         }));
         renderer.kill("SIGINT");
     });
-}, 42);
+}, 33);
