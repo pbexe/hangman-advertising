@@ -11,6 +11,13 @@ communicator.on("message", function(message) {
 		if (max_constraints.width < message.contents.width) max_constraints.width = message.contents.width;
 		if (max_constraints.height < message.contents.height) max_constraints.height = message.contents.height;
 		console.log("New constraints are " + max_constraints.width + "x" + max_constraints.height);
+		renderer.send(JSON.stringify({
+			type: "constraints",
+			contents: {
+				width: max_constraints.width,
+				height: max_constraints.height
+			}
+		}));
 	}
 });
 
@@ -21,7 +28,11 @@ var dt = 0;
 setInterval(function() {
     var renderer = child_process.fork("modules/render.js");
 
-    renderer.send(dt);
+    renderer.send(JSON.stringify({
+    	type: "dt",
+    	contents: dt
+    });
+
     dt++;
 
     renderer.on("message", function(frame) {
