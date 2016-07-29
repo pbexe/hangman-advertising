@@ -5,7 +5,7 @@ var io = require('socket.io')(http);
 // Configuring Routes
 app.get('/', function(req, res){
 	console.log("Sending root");
-	res.sendfile('index.html');
+	res.sendfile('slave.html');
 });
 
 // Socket.IO
