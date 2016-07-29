@@ -31,7 +31,7 @@ setInterval(function() {
     renderer.send(JSON.stringify({
     	type: "dt",
     	contents: dt
-    });
+    }));
 
     dt++;
 
