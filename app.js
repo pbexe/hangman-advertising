@@ -1,21 +1,37 @@
 var fs = require("fs");
 var child_process = require('child_process');
 
+var max_constraints = {width: 0, height: 0};
+
 // Clients
-var clients = child_process.fork("modules/clients.js");
+var communicator = child_process.fork("modules/clients.js");
+communicator.on("message", function(message) {
+	message = JSON.parse(message);
+	if (message.type = "constraints") {
+		if (max_constraints.width < message.contents.width) max_constraints.width = message.contents.width;
+		if (max_constraints.height < message.contents.height) max_constraints.height = message.contents.height;
+		console.log("New constraints are " + max_constraints.width + "x" + max_constraints.height);
+	}
+});
 
 // Delta Time
 var dt = 0;
 
 // Render Loop
 setInterval(function() {
-    var slave = child_process.fork("modules/render.js");
+    var renderer = child_process.fork("modules/render.js");
 
-    slave.send(dt);
+    renderer.send(dt);
     dt++;
 
-    slave.on("message", function(frame) {
-        clients.send(JSON.stringify({ frame: frame.frame, dt: frame.dt, time: Date.now() }));
-        slave.kill("SIGINT");
+    renderer.on("message", function(frame) {
+        communicator.send(JSON.stringify({
+        	type: "frame",
+        	contents: {
+        		frame: frame.frame,
+        		dt: frame.dt, time: Date.now()
+        	}
+        }));
+        renderer.kill("SIGINT");
     });
 }, 42);

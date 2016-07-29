@@ -12,6 +12,13 @@
     <script>
         var socket = io();
         var dt_latest = 0;
+        socket.on("connect", function(packet){
+        	socket.emit("handshake", {
+        		width: $(document).width(),
+        		height: $(document).height()
+        	});
+        });
+        
         socket.on("frame", function(packet){
             if (dt_latest <= packet.dt) {
                 dt_latest = packet.dt;
