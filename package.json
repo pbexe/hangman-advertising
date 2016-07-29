@@ -18,6 +18,7 @@
   "homepage": "https://github.com/pbexe/hangman-advertising#readme",
   "dependencies": {
     "canvas": "^1.4.0",
+    "qrcode": "^0.4.2",
     "socket.io": "^1.4.8"
   }
 }

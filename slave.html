@@ -24,6 +24,11 @@
         		height: $(document).height()
         	});*/
         });
+        socket.on("configure", function(packet){
+            socket.emit("get code", {}, function(packet){
+                console.log(packet);
+            });
+        });
         var count = 0;
 
         setInterval(function() {

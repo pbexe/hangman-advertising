@@ -1,6 +1,9 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var QRCode = require('qrcode');
+
+var socketClients = {};
 
 // Configuring Routes
 app.get('/', function(req, res){
@@ -10,6 +13,13 @@ app.get('/', function(req, res){
 
 // Socket.IO
 io.on('connection', function(socket){
+	io.emit("configure");
+	
+	socket.on("get code", function(packet, callback){
+		QRCode.toDataURL(1, function(err, url){
+			callback(url);
+		});
+	});
 	/*socket.on("handshake", function(packet){
 		process.send(JSON.stringify({
 			type: "constraints",
