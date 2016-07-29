@@ -4,7 +4,12 @@
     <title>Hangman Advertising</title>
 </head>
 <body>
-    <img />
+    <configure>
+        <img id="configure" style="height:600px;width:600px;margin-left:calc(50vw - 300px);margin-right:calc(50vw - 300px);margin-top:calc(50vh - 300px)" />
+    </configure>
+    <render>
+        <img id="render" />
+    </render>
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
     <script src="/socket.io/socket.io.js"></script>
@@ -29,7 +34,7 @@
         socket.on("frame", function(packet){
             if (dt_latest <= packet.dt) {
                 dt_latest = packet.dt;
-                $("img").attr("src", packet.frame);
+                $("img#render").attr("src", packet.frame);
                 $("p.latency").text(packet.dt + " : " + (Date.now() - packet.time));
                 count ++;
             } else {
@@ -37,5 +42,18 @@
             }
         });
     </script>
+    <style>
+        configure, render {
+            display: block;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            right: 0px;
+            bottom: 0px;
+            width: 100vw;
+            height: 100vh;
+            background: #fff;
+        }
+    </style>
 </body>
 </html>
