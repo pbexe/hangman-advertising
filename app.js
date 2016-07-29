@@ -15,7 +15,7 @@ app.get('/', function(req, res){
 
 io.on('connection', function(socket){
 	console.log('a user connected');
-	fs.readFile("/Users/finnian/Pictures/profile.jpg", function(err, squid){
+	fs.readFile("testimg.jpg", function(err, squid){
 		if (err) throw err;
 		img = new Image;
 		img.src = squid;
