@@ -1,0 +1,23 @@
+{
+  "name": "hangman-advertising",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pbexe/hangman-advertising.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pbexe/hangman-advertising/issues"
+  },
+  "homepage": "https://github.com/pbexe/hangman-advertising#readme",
+  "dependencies": {
+    "canvas": "^1.4.0",
+    "socket.io": "^1.4.8"
+  }
+}
