@@ -1,7 +1,15 @@
-<script src="/socket.io/socket.io.js"></script>
-<script>
-	var socket = io();
-	socket.on("image", function(packet){
-		console.log(packet);
-	});
-</script>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hangman Advertising</title>
+</head>
+<body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+        socket.on("image", function(packet){
+            console.log(packet);
+        });
+    </script>
+</body>
+</html>

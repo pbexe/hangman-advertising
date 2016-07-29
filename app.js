@@ -20,7 +20,7 @@ io.on('connection', function(socket){
 		img = new Image;
 		img.src = squid;
 
-		for (var i = 0; i < 1000; i++){
+		for (var i = 0; i < 5; i++){
 			ctx.drawImage(img, 0, 0, img.width / 4, img.height / 4);
 			ctx.font = '30px Impact';
 			ctx.rotate(.1);
@@ -33,7 +33,7 @@ io.on('connection', function(socket){
 			ctx.lineTo(50 + te.width, 102);
 			ctx.stroke();
 
-			io.sockets.emit("image", canvas.toDataURL());
+			io.emit("image", { canvas: canvas.toDataURL() });
 			console.log("Rendered image");
 		}
 	});
