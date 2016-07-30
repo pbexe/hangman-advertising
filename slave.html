@@ -6,7 +6,7 @@
 </head>
 <body>
     <configure>
-        <img id="configure" style="height:100vmin;width:100vmin;margin-left:calc(50vw - 50vmin);margin-right:calc(50vw - 50vmin);margin-top:calc(50vh - 50vmin);" />
+        <img id="configure" style="height:500px;width:500px;margin-left:calc(50vw - 250px);margin-right:calc(50vw - 250px);margin-top:calc(50vh - 250px);" />
     </configure>
     <render>
         <img id="render" style="height:100vh;width:100vw;" />
@@ -21,6 +21,7 @@
         var dt_latest = 0;
 
         console.log(window.devicePixelRatio);
+        console.log(navigator.userAgent);
 
         $("render").css("visibility", "visible");
         $("configure").css("visibility", "hidden");
