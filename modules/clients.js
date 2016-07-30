@@ -8,10 +8,6 @@ var QRCodeReader = new QRCodeReaderModule();
 var socketClients = [];
 var rendering = true;
 
-var uploading = multer({
-	dest: __dirname + '../public/uploads/',
-})
-
 // Configuring Routes
 app.get('/', function(req, res){
 	console.log("Sending root");
@@ -35,25 +31,51 @@ app.get("/render", function(req, res) {
 
 app.post("/upload", function(req, res){
 	console.log(req.files);
-
+	configure();
 });
+
+function getSocketIndex(id){
+	for (var i = 0; i < socketClients.length; i++){
+		if (socketClients[i].id == id) return i;
+	}
+	return false;
+}
+
+function configure(){
+	for (var i = 0; i < socketClients.length; i++){
+		socketClients[i].checked = false;
+	}
+	io.emit("configure");
+}
 
 // Socket.IO
 io.on('connection', function(socket){
-	if (socketClients.indexOf(socket.id) === -1){
-		socketClients.push(socket.id);
+	if (getSocketIndex(socket.id) === false){
+		socketClients.push({id: socket.id, checked: false, width: 0, height: 0});
 	}
-	io.emit("configure");
+
+	configure();
 	
+	socket.on("constraints", function(packet){
+		var index = getSocketIndex(socket.id);
+		if (index !== false){
+			socketClients[index].checked = true;
+			socketClients[index].width = packet.width;
+			socketClients[index].height = packet.height;
+		}
+		console.log("Validated " + socket.id);
+		console.log(socketClients);
+	});
+
 	socket.on("get code", function(packet, callback){
-		console.log("Generating code for " + socket.id + " (" + socketClients.indexOf(socket.id) + ")");
-		QRCodeGenerator.toDataURL(socketClients.indexOf(socket.id).toString(), function(err, url){
+		console.log("Generating code for " + socket.id + " (" + getSocketIndex(socket.id) + ")");
+		QRCodeGenerator.toDataURL(getSocketIndex(socket.id).toString(), function(err, url){
 			callback(url);
 		});
 	});
 
 	socket.on("disconnect", function(packet){
-		socketClients.splice(socketClients.indexOf(socket.id), 1);
+		socketClients.splice(getSocketIndex(socket.id), 1);
 	});
 });
 
