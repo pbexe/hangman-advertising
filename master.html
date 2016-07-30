@@ -5,14 +5,14 @@
 </head>
 
 <body>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="button" value="Configure" id="configure" />
+    <button id="configure">Configure</button>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
         <input type="file" value="Render" id="render" />
+        <input type="Submit" value="Upload" />
     </form>
 
     <script src="/socket.io/socket.io.js"></script>
-	<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
 
     <script>
         $("#configure").click(function() {

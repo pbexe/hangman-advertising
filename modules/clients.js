@@ -1,12 +1,19 @@
-var app = require('express')();
+var express = require("express");
+var methodOverride = require('method-override');
+var multer = require('multer');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+
 var QRCodeGenerator = require('qrcode');
 var QRCodeReaderModule = require('qrcode-reader');
 var QRCodeReader = new QRCodeReaderModule();
 
 var socketClients = [];
 var rendering = true;
+
+app.use(methodOverride());
+app.use(multer());
 
 // Configuring Routes
 app.get('/', function(req, res){
@@ -31,7 +38,7 @@ app.get("/render", function(req, res) {
 
 app.post("/upload", function(req, res){
 	console.log(req.files);
-	configure();
+	// configure();
 });
 
 function getSocketIndex(id){
