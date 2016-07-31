@@ -1,8 +1,6 @@
 var express = require("express");
-
 var multer = require("multer");
 var upload = multer({ dest: "uploads/" });
-
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -10,6 +8,7 @@ var io = require('socket.io')(http);
 var QRCodeGenerator = require('qrcode');
 var QRCodeReaderModule = require('qrcode-reader');
 var QRCodeReader = new QRCodeReaderModule();
+var Jimp = require("jimp");
 
 var socketClients = [];
 var rendering = true;
@@ -36,7 +35,11 @@ app.get("/render", function(req, res) {
 });
 
 app.post("/upload", upload.single("codes"), function(req, res, next){
-	console.log(req.file);
+	console.log(req.file.path);
+	Jimp.read(req.file.path, function(error, lenna){
+		lenna.contrast(1)
+			.write("uploads/adjusted.jpg");
+	})
 	// configure();
 });
 
