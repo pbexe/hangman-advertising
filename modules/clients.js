@@ -42,7 +42,7 @@ app.post("/upload", upload.single("codes"), function(req, res, next){
 		lenna.contrast(1)
 			.write("uploads/adjusted.jpg");
 	})
-	// configure();
+	configure();
 });
 
 function getSocketIndex(id){
@@ -57,6 +57,19 @@ function configure(){
 		socketClients[i].checked = false;
 	}
 	io.emit("configure");
+}
+
+function checkConfigured(){
+	for (var i = 0; i < socketClients.length; i++){
+		if (socketClients[i].checked === false){
+			return false;
+		}
+	}
+	return true;
+}
+
+function renderMode(){
+	io.emit("render");
 }
 
 // Socket.IO
@@ -76,6 +89,7 @@ io.on('connection', function(socket){
 		}
 		console.log("Validated " + socket.id);
 		console.log(socketClients);
+		if (checkConfigured()) renderMode();
 	});
 
 	socket.on("get code", function(packet, callback){
@@ -87,6 +101,7 @@ io.on('connection', function(socket){
 
 	socket.on("disconnect", function(packet){
 		socketClients.splice(getSocketIndex(socket.id), 1);
+		configure();
 	});
 });
 
