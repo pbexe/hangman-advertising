@@ -103,7 +103,7 @@ io.on('connection', function(socket){
                         if (image.getPixelColor(x, y) == parseInt("FFFFFFFF", 16)) {
                             image.setPixelColor(parseInt("DF298AFF", 16), x, y);
                         } else if (image.getPixelColor(x, y) == parseInt("000000FF", 16)) {
-                            image.setPixelColor(parseFloat("FFFFFFFF", 16), x, y);
+                            image.setPixelColor(parseInt("FFFFFFFF", 16), x, y);
                         }
                     }
                 }
