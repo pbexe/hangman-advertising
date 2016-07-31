@@ -80,8 +80,25 @@ io.on('connection', function(socket){
 
 	socket.on("get code", function(packet, callback){
 		console.log("Generating code for " + socket.id + " (" + getSocketIndex(socket.id) + ")");
-		QRCodeGenerator.toDataURL(getSocketIndex(socket.id).toString(), function(err, url){
-			callback(url);
+		QRCodeGenerator.draw(getSocketIndex(socket.id).toString(), function(err, canvas){
+            var buffer = canvas.toBuffer();
+            Jimp.read(buffer, function(err, image) {
+                for (var y = 0; y < image.bitmap.width; y++) {
+                    for (var x = 0; x < image.bitmap.height; x++) {
+                        console.log(image.getPixelColor(x, y));
+                        if (image.getPixelColor(x, y) == parseInt("FFFFFFFF", 16)) {
+                            image.setPixelColor(parseInt("DF298AFF", 16), x, y);
+                        } else if (image.getPixelColor(x, y) == parseInt("000000FF", 16)) {
+                            image.setPixelColor(parseFloat("FFFFFFFF", 16), x, y);
+                        }
+                    }
+                }
+                image.getBuffer(Jimp.MIME_PNG, function(err, buffer) {
+                    console.log(err);
+                    console.log(buffer.toString("base64"));
+                    callback("data:image/png;base64," + buffer.toString("base64"));
+                });
+            });
 		});
 	});
 
