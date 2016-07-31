@@ -43,13 +43,95 @@ setInterval(function() {
 
 var cv = require("opencv");
 
-cv.readImage("/Users/finnian/Pictures/profile.jpg", function(err, im){
-  im.detectObject(cv.FACE_CASCADE, {}, function(err, faces){
-    for (var i=0;i<faces.length; i++){
-      var x = faces[i]
-      im.ellipse(x.x + x.width/2, x.y + x.height/2, x.width/2, x.height/2);
+var lowThresh = 0;
+var highThresh = 100;
+var nIters = 2;
+var minArea = 2000;
+
+var BLUE  = [0, 255, 0]; // B, G, R
+var RED   = [0, 0, 255]; // B, G, R
+var GREEN = [0, 255, 0]; // B, G, R
+var WHITE = [255, 255, 255]; // B, G, R
+
+
+cv.readImage('uploads/testimage.jpg', function(err, im) {
+    if (err) throw err;
+
+    width = im.width()
+    height = im.height()
+    if (width < 1 || height < 1) throw new Error('Image has no size');
+
+    var out = new cv.Matrix(height, width);
+
+    var lowerBound = [80, 30, 186];
+    var upperBound = [200, 80, 255];
+    im.inRange(lowerBound, upperBound);
+
+    im.save("uploads/test.jpg");
+
+    im_canny = im.copy();
+    im_canny.canny(lowThresh, highThresh);
+    im_canny.dilate(nIters);
+
+    contours = im_canny.findContours();
+
+    var possibleScreens = [];
+    var impossibleScreens = [];
+
+    console.log(contours.size());
+
+    // Loop for Each Contour
+    for (i = 0; i < contours.size(); i++) {
+
+        if (contours.area(i) < minArea) continue;
+
+        var arcLength = contours.arcLength(i, true);
+        contours.approxPolyDP(i, 0.01 * arcLength, true);
+
+        // Test if Contour has more than 4 Vertices
+        if (contours.cornerCount(i) == 4) {
+            // Push as Possible Screen
+            possibleScreens.push(i);
+
+            // Loop for Each Contour to Test if any Contours are Inside
+            for (s = 0; s < contours.size(); s++) {
+                // Make Sure that the Contour Doesnt Evaluate Position with Itself
+                if (s !== i) {
+                    if (contours.cornerCount(s) == 4) {
+                        // Declare CBR as Contour Bounding Rect
+                        var cbr = { i: contours.boundingRect(i), s: contours.boundingRect(s) };
+
+                        // Test if Contour is Inside Another Contour
+                        if ((cbr.i.x < cbr.s.x) &&
+                           (cbr.i.y < cbr.s.y) &&
+                            ((cbr.i.x + cbr.i.width) > (cbr.s.x + cbr.s.width)) &&
+                           ((cbr.i.y + cbr.i.height) > (cbr.s.y + cbr.s.height))) {
+                            // Contours that Lie Inside Another Contour
+                            //out.drawContour(contours, s, GREEN);
+                            if (possibleScreens.indexOf(s) > -1) {
+                                // Remove these Contours from the Array of Possible Screens
+                                possibleScreens.splice(possibleScreens.indexOf(s), 1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
-    console.log("saved");
-    im.save('./out.jpg');
-  });
+
+    // Left with Array of Definite Screens
+
+    console.log(possibleScreens);
+
+    // Log all the Vertices of the Screens
+    for (ps in possibleScreens) {
+        out.drawContour(contours, possibleScreens[ps], RED);
+        console.log(contours.cornerCount(possibleScreens[ps]));
+        for (point = 0; point < contours.cornerCount(possibleScreens[ps]); point++) {
+            console.log(contours.point(possibleScreens[ps], point));
+        }
+    }
+
+    out.save('uploads/detect-shapes.png');
+    console.log('Image saved to ./tmp/detect-shapes.png');
 });
