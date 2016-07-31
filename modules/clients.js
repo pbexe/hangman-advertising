@@ -13,6 +13,8 @@ var Jimp = require("jimp");
 var socketClients = [];
 var rendering = true;
 
+app.use(express.static("static"));
+
 // Configuring Routes
 app.get('/', function(req, res){
 	console.log("Sending root");
