@@ -2,9 +2,10 @@
 <html>
 <head>
     <title>Hangman Advertising</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
-<body style="overflow: hidden;">
+<body>
     <configure>
         <img id="configure" style="height:500px;width:500px;margin-left:calc(50vw - 250px);margin-right:calc(50vw - 250px);margin-top:calc(50vh - 250px);" />
     </configure>
@@ -67,27 +68,5 @@
             }
         });
     </script>
-    <style>
-        configure, render {
-            display: block;
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            right: 0px;
-            bottom: 0px;
-            width: 100vw;
-            height: 100vh;
-            background: #fff;
-        }
-
-        img#configure {
-            image-rendering: optimizeSpeed;             /* STOP SMOOTHING, GIVE ME SPEED  */
-            image-rendering: -moz-crisp-edges;          /* Firefox                        */
-            image-rendering: -o-crisp-edges;            /* Opera                          */
-            image-rendering: -webkit-optimize-contrast; /* Chrome (and eventually Safari) */
-            image-rendering: pixelated; /* Chrome */
-            image-rendering: optimize-contrast;
-        }
-    </style>
 </body>
 </html>
