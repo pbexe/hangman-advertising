@@ -99,7 +99,6 @@ io.on('connection', function(socket){
 	            Jimp.read(buffer, function(err, image) {
 	                for (var y = 0; y < image.bitmap.width; y++) {
 	                    for (var x = 0; x < image.bitmap.height; x++) {
-	                        console.log(image.getPixelColor(x, y));
 	                        if (image.getPixelColor(x, y) == parseInt("FFFFFFFF", 16)) {
 	                            image.setPixelColor(parseInt("DF298AFF", 16), x, y);
 	                         } else if (image.getPixelColor(x, y) == parseInt("000000FF", 16)) {
@@ -108,8 +107,6 @@ io.on('connection', function(socket){
 	                    }
 	                }
 	                image.getBuffer(Jimp.MIME_PNG, function(err, buffer) {
-	                    console.log(err);
-	                    console.log(buffer.toString("base64"));
 	                    callback("data:image/png;base64," + buffer.toString("base64"));
 	                });
 			});
