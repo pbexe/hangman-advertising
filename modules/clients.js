@@ -27,13 +27,13 @@ app.get('/master', function(req, res){
 });
 
 app.get("/configure", function(req, res) {
-    rendering = false;
-    io.emit("configure");
+	rendering = false;
+	io.emit("configure");
 });
 
 app.get("/render", function(req, res) {
-    rendering = true;
-    io.emit("render");
+	rendering = true;
+	io.emit("render");
 });
 
 app.post("/upload", upload.single("codes"), function(req, res, next){
@@ -95,25 +95,25 @@ io.on('connection', function(socket){
 	socket.on("get code", function(packet, callback){
 		console.log("Generating code for " + socket.id + " (" + getSocketIndex(socket.id) + ")");
 		QRCodeGenerator.draw(getSocketIndex(socket.id).toString(), function(err, canvas){
-            var buffer = canvas.toBuffer();
-            Jimp.read(buffer, function(err, image) {
-                for (var y = 0; y < image.bitmap.width; y++) {
-                    for (var x = 0; x < image.bitmap.height; x++) {
-                        console.log(image.getPixelColor(x, y));
-                        if (image.getPixelColor(x, y) == parseInt("FFFFFFFF", 16)) {
-                            image.setPixelColor(parseInt("DF298AFF", 16), x, y);
-                        } else if (image.getPixelColor(x, y) == parseInt("000000FF", 16)) {
-                            image.setPixelColor(parseInt("FFFFFFFF", 16), x, y);
-                        }
-                    }
-                }
-                image.getBuffer(Jimp.MIME_PNG, function(err, buffer) {
-                    console.log(err);
-                    console.log(buffer.toString("base64"));
-                    callback("data:image/png;base64," + buffer.toString("base64"));
-                });
-            });
-		});
+	            var buffer = canvas.toBuffer();
+	            Jimp.read(buffer, function(err, image) {
+	                for (var y = 0; y < image.bitmap.width; y++) {
+	                    for (var x = 0; x < image.bitmap.height; x++) {
+	                        console.log(image.getPixelColor(x, y));
+	                        if (image.getPixelColor(x, y) == parseInt("FFFFFFFF", 16)) {
+	                            image.setPixelColor(parseInt("DF298AFF", 16), x, y);
+	                         } else if (image.getPixelColor(x, y) == parseInt("000000FF", 16)) {
+	                            image.setPixelColor(parseInt("FFFFFFFF", 16), x, y);
+	                        }
+	                    }
+	                }
+	                image.getBuffer(Jimp.MIME_PNG, function(err, buffer) {
+	                    console.log(err);
+	                    console.log(buffer.toString("base64"));
+	                    callback("data:image/png;base64," + buffer.toString("base64"));
+	                });
+			});
+	       });
 	});
 
 	socket.on("disconnect", function(packet){
@@ -128,7 +128,7 @@ http.listen(3000, function(){
 });
 
 process.on("message", function(message) {
-    if (rendering == true) {
-        io.emit("frame", JSON.parse(message));
-    }
+	if (rendering == true) {
+		io.emit("frame", JSON.parse(message));
+	}
 });
