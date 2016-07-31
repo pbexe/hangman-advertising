@@ -22,6 +22,7 @@
     "jimp": "^0.2.24",
     "method-override": "^2.3.6",
     "multer": "^1.1.0",
+    "opencv": "^5.0.0",
     "qrcode": "^0.4.2",
     "qrcode-reader": "^0.2.1",
     "socket.io": "^1.4.8"
