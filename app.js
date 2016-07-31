@@ -108,7 +108,7 @@ cv.readImage('uploads/testimage.jpg', function(err, im) {
                            ((cbr.i.y + cbr.i.height) > (cbr.s.y + cbr.s.height))) {
                             // Contours that Lie Inside Another Contour
                             //out.drawContour(contours, s, GREEN);
-                            if (possibleScreens.indexOf(s) > -1) { //HOLY CRAP! A wild nested nested nested nested nested nested if statement, it challenged you to scrabble
+                            if (possibleScreens.indexOf(s) > -1) { //HOLY CRAP! A wild nested nested nested nested nested nested if statement appeared, it challenged you to scrabble
                                 // Remove these Contours from the Array of Possible Screens
                                 possibleScreens.splice(possibleScreens.indexOf(s), 1);
                             }
