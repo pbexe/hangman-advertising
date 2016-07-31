@@ -3,10 +3,10 @@ var child_process = require('child_process');
 
 var fps = 1;
 
-var max_constraints = {width: 0, height: 0};
+var max_constraints = {width: 0, height: 0}; //Any hint of what a contraint might be in this instance?
 
-// Clients
-var communicator = child_process.fork("modules/clients.js");
+// Clients //I'm glad someone tried to do some useful commenting, emphasis on tried...
+var communicator = child_process.fork("modules/clients.js"); //Create process to run webserver
 communicator.on("message", function(message) {
 	message = JSON.parse(message);
 	if (message.type = "constraints") {
@@ -28,7 +28,7 @@ var dt = 0;
 
 // Render Loop
 setInterval(function() {
-    var renderer = child_process.fork("modules/render.js");
+    var renderer = child_process.fork("modules/render.js"); // Create Child process to render canvas on request
 
     renderer.send(dt);
 
@@ -37,11 +37,11 @@ setInterval(function() {
     renderer.on("message", function(frame) {
         communicator.send(JSON.stringify({ frame: frame.frame,
         		dt: frame.dt, time: Date.now() }));
-        renderer.kill("SIGINT");
+        renderer.kill("SIGINT"); //Killing is bad, but killing processes is all in a days work, at least its not SIGKILL, because that would always be fatal - http://www.gnu.org/software/libc/manual/html_node/Termination-Signals.html
     });
 }, 1000/fps);
 
-var cv = require("opencv");
+var cv = require("opencv"); //I dont want to publish my CV to the interwebs... OK OK, I worked as a psychologist for a while, I'm ashamed of myself too...
 
 var lowThresh = 0;
 var highThresh = 100;
@@ -52,14 +52,14 @@ var BLUE  = [0, 255, 0]; // B, G, R
 var RED   = [0, 0, 255]; // B, G, R
 var GREEN = [0, 255, 0]; // B, G, R
 var WHITE = [255, 255, 255]; // B, G, R
-
+var slight_grey_ish_color_just_off_green_but_not_quite_blue = [253,254,253] // B, G, R (Big Green Rhombus)...
 
 cv.readImage('uploads/testimage.jpg', function(err, im) {
-    if (err) throw err;
+    if (err) throw err; 
 
     width = im.width()
     height = im.height()
-    if (width < 1 || height < 1) throw new Error('Image has no size');
+    if (width < 1 || height < 1) throw new Error('Image has no size'); //Lets not be heightist...
 
     var out = new cv.Matrix(height, width);
 
@@ -69,7 +69,7 @@ cv.readImage('uploads/testimage.jpg', function(err, im) {
 
     im.save("uploads/test.jpg");
 
-    im_canny = im.copy();
+    im_canny = im.copy(); //im_funny 
     im_canny.canny(lowThresh, highThresh);
     im_canny.dilate(nIters);
 
@@ -88,12 +88,12 @@ cv.readImage('uploads/testimage.jpg', function(err, im) {
         var arcLength = contours.arcLength(i, true);
         contours.approxPolyDP(i, 0.01 * arcLength, true);
 
-        // Test if Contour has more than 4 Vertices
+        // Test if Contour has more than 4 Vertices           // WOW A WILD COMMENT APPEARED, THEY ARE RARE IN THESE PARTS
         if (contours.cornerCount(i) == 4) {
             // Push as Possible Screen
             possibleScreens.push(i);
 
-            // Loop for Each Contour to Test if any Contours are Inside
+            // Loop for Each Contour to Test if any Contours are Inside 
             for (s = 0; s < contours.size(); s++) {
                 // Make Sure that the Contour Doesnt Evaluate Position with Itself
                 if (s !== i) {
@@ -101,14 +101,14 @@ cv.readImage('uploads/testimage.jpg', function(err, im) {
                         // Declare CBR as Contour Bounding Rect
                         var cbr = { i: contours.boundingRect(i), s: contours.boundingRect(s) };
 
-                        // Test if Contour is Inside Another Contour
+                        // Test if Contour is Inside Another Contour //I hate when that happens, damn contours
                         if ((cbr.i.x < cbr.s.x) &&
                            (cbr.i.y < cbr.s.y) &&
                             ((cbr.i.x + cbr.i.width) > (cbr.s.x + cbr.s.width)) &&
                            ((cbr.i.y + cbr.i.height) > (cbr.s.y + cbr.s.height))) {
                             // Contours that Lie Inside Another Contour
                             //out.drawContour(contours, s, GREEN);
-                            if (possibleScreens.indexOf(s) > -1) {
+                            if (possibleScreens.indexOf(s) > -1) { //HOLY CRAP! A wild nested nested nested nested nested nested if statement, it challenged you to scrabble
                                 // Remove these Contours from the Array of Possible Screens
                                 possibleScreens.splice(possibleScreens.indexOf(s), 1);
                             }
@@ -121,13 +121,13 @@ cv.readImage('uploads/testimage.jpg', function(err, im) {
 
     // Left with Array of Definite Screens
 
-    console.log(possibleScreens);
+    console.log(possibleScreens); 
 
-    // Log all the Vertices of the Screens
+    // Log all the Vertices of the Screens 
     for (ps in possibleScreens) {
         out.drawContour(contours, possibleScreens[ps], RED);
         console.log(contours.cornerCount(possibleScreens[ps]));
-        for (point = 0; point < contours.cornerCount(possibleScreens[ps]); point++) {
+        for (point = 0; point < contours.cornerCount(possibleScreens[ps]); point++) { 
             console.log(contours.point(possibleScreens[ps], point));
         }
     }
