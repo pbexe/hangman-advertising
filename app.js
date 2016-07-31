@@ -11,7 +11,7 @@ communicator.on("message", function(message) {
 	message = JSON.parse(message);
 	if (message.type = "constraints") {
 		if (max_constraints.width < message.contents.width) max_constraints.width = message.contents.width;
-		if (max_constraints.height < message.contents.height) max_constraints.height = message.contents.height;
+		if (max_constraints.height < message.contents.height) max_constraints.height = message.contents.height; //This nested nested one line if statement was why python was invented...
 		console.log("New constraints are " + max_constraints.width + "x" + max_constraints.height);
 		renderer.send(JSON.stringify({
 			type: "constraints",
