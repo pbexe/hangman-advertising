@@ -37,3 +37,12 @@ statistics {
     position: relative;
     display: block;
 }
+
+body.configuration configure {
+    background: #DF298A;
+}
+
+body.configuration statistics,
+body.configuration render {
+    visibility: hidden;
+}

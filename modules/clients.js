@@ -17,12 +17,11 @@ app.use(express.static("static"));
 
 // Configuring Routes
 app.get('/', function(req, res){
-	console.log("Sending root");
 	res.sendfile('slave.html');
 });
 
 app.get('/master', function(req, res){
-	console.log("Sending root");
+
 	res.sendfile('master.html');
 });
 
@@ -37,7 +36,6 @@ app.get("/render", function(req, res) {
 });
 
 app.post("/upload", upload.single("codes"), function(req, res, next){
-	console.log(req.file.path);
 	Jimp.read(req.file.path, function(error, lenna){
 		lenna.contrast(1)
 			.write("uploads/adjusted.jpg");
@@ -68,12 +66,12 @@ function checkConfigured(){
 	return true;
 }
 
-function renderMode(){
-	io.emit("render");
+function render(){
 }
 
 // Socket.IO
 io.on('connection', function(socket){
+	console.log("New connection, reconfiguring clients...");
 	if (getSocketIndex(socket.id) === false){
 		socketClients.push({id: socket.id, checked: false, width: 0, height: 0});
 	}
@@ -87,13 +85,13 @@ io.on('connection', function(socket){
 			socketClients[index].width = packet.width;
 			socketClients[index].height = packet.height;
 		}
-		console.log("Validated " + socket.id);
-		console.log(socketClients);
-		if (checkConfigured()) renderMode();
+		if (checkConfigured()) {
+			console.log("Configuration done, switching to render mode");
+			render();
+		}
 	});
 
 	socket.on("get code", function(packet, callback){
-		console.log("Generating code for " + socket.id + " (" + getSocketIndex(socket.id) + ")");
 		QRCodeGenerator.draw(getSocketIndex(socket.id).toString(), function(err, canvas){
 	            var buffer = canvas.toBuffer();
 	            Jimp.read(buffer, function(err, image) {

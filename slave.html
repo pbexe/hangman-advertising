@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
     <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
-<body>
+<body class="configuration">
     <configure>
         <img id="configure" style="height:500px;width:500px;margin-left:calc(50vw - 250px);margin-right:calc(50vw - 250px);margin-top:calc(50vh - 250px);" />
     </configure>
@@ -27,9 +27,6 @@
         console.log(window.devicePixelRatio);
         console.log(navigator.userAgent);
 
-        $("render").css("visibility", "visible");
-        $("configure").css("visibility", "hidden");
-
         function sendConstraints(){
             socket.emit("constraints", {
                 width: $(document).width(),
@@ -42,18 +39,17 @@
         });
 
         socket.on("configure", function(packet){
-            $("configure").css("background", "#DF298A");
+            console.log("Configuration mode");
+            $("body").removeClass("configuration").addClass("configuration");
             socket.emit("get code", {}, function(packet){
                 $("img#configure").attr("src", packet);
-                $("configure").css("visibility", "visible");
-                $("render").css("visibility", "hidden");
             });
             sendConstraints();
         });
 
         socket.on("render", function() {
-            $("render").css("visibility", "visible");
-            $("configure").css("visibility", "hidden");
+            console.log("Render mode");
+            $("body").removeClass("configuration");
         });
         var count = 0;
 
