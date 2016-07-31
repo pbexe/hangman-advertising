@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/pbexe/hangman-advertising#readme",
   "dependencies": {
+    "body-parser": "^1.15.2",
     "canvas": "^1.4.0",
     "jimp": "^0.2.24",
     "method-override": "^2.3.6",
