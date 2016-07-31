@@ -16,8 +16,10 @@
     </render>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
-    <p class="latency"></p>
-    <p class="fps"></p>
+    <statistics>
+        <p class="latency"></p>
+        <p class="fps"></p>
+    </statistics>
     <script>
         var socket = io();
         var dt_latest = 0;
@@ -55,7 +57,7 @@
         var count = 0;
 
         setInterval(function() {
-            $("p.fps").text(count);
+            $("p.fps").text("FPS: " + count);
             count = 0;
         }, 1000);
 
@@ -63,7 +65,7 @@
             if (dt_latest <= packet.dt) {
                 dt_latest = packet.dt;
                 $("img#render").attr("src", packet.frame);
-                $("p.latency").text(packet.dt + " : " + (Date.now() - packet.time));
+                $("p.latency").text("Latency: " + (Date.now() - packet.time) + "ms");
                 count ++;
             } else {
                 console.log("Frame Skip");
