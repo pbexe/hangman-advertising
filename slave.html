@@ -42,6 +42,7 @@
         });
 
         socket.on("configure", function(packet){
+            $("configure").css("background", "#DF298A");
             socket.emit("get code", {}, function(packet){
                 $("img#configure").attr("src", packet);
                 $("configure").css("visibility", "visible");
