@@ -1,5 +1,17 @@
 var Canvas = require('canvas');
 
+function toColour(num) {
+    num >>>= 0;
+    var b = num & 0xFF,
+          g = (num & 0xFF00) >>> 8,
+          r = (num & 0xFF0000) >>> 16,
+          a = ( (num & 0xFF000000) >> 24 ) / 255;
+    b = ("00" + String(parseInt(b, 16))).slice(-2);
+    g = ("00" + String(parseInt(g, 16))).slice(-2);
+    r = ("00" + String(parseInt(r, 16))).slice(-2);
+    return "#" + b + g + r;
+}
+
 process.on("message", function(dt) {
     var Image = Canvas.Image;
     var canvas = new Canvas(800, 800, "svg");
@@ -8,7 +20,9 @@ process.on("message", function(dt) {
     bg.rect(0,0, canvas.width, canvas.height);
     var bg_gradient = bg.createRadialGradient(238, 50, 10, 238, 50, 300);
     bg_gradient.addColorStop(0, '#8ED6FF');
-    bg_gradient.addColorStop(1, '#004CB3');
+    // bg_gradient.addColorStop(1, '#004CB3');
+    console.log(toColour(dt));
+    bg_gradient.addColorStop(1, toColour(dt));
     bg.fillStyle = bg_gradient;
     bg.fill();
 
