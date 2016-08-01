@@ -43,6 +43,11 @@ app.post("/upload", upload.single("codes"), function(req, res, next){
 	configure();
 });
 
+app.get("/emit", function(req, res){
+	io.emit(req.query.command, {msg: req.query.msg});
+	res.json({msg: "done", params: [req.query.command, req.query.msg]});
+});
+
 function getSocketIndex(id){
 	for (var i = 0; i < socketClients.length; i++){
 		if (socketClients[i].id == id) return i;

@@ -68,6 +68,13 @@
                 console.log("Frame Skip");
             }
         });
+
+        socket.on("reload", function(packet){
+            window.location.reload();
+        });
+        socket.on("load", function(packet){
+            window.location.href = packet.msg;
+        });
     </script>
 </body>
 </html>
