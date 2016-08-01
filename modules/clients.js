@@ -64,7 +64,6 @@ app.get("/render", function(req, res) {
 });
 
 app.post("/upload", upload.single("codes"), function(req, res, next) {
-	if (err) throw err; 
 	cv.readImage(req.file.path, function(err, im) {
 		width = im.width()
 		height = im.height()
