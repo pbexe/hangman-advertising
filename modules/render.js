@@ -21,7 +21,7 @@ process.on("message", function(dt) {
     var bg_gradient = bg.createRadialGradient(238, 50, 10, 238, 50, 300);
     bg_gradient.addColorStop(0, '#8ED6FF');
     // bg_gradient.addColorStop(1, '#004CB3');
-    console.log(toColour(dt));
+    //console.log(toColour(dt));
     bg_gradient.addColorStop(1, toColour(dt));
     bg.fillStyle = bg_gradient;
     bg.fill();

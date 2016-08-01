@@ -93,6 +93,8 @@ cv.readImage('uploads/testimage2.jpg', function(err, im) {
         var arcLength = contours.arcLength(i, true);
         contours.approxPolyDP(i, 0.01 * arcLength, true);
 
+        out.drawContour(contours, i, GREEN);
+
         // Test if Contour has more than 4 Vertices           // WOW A WILD COMMENT APPEARED, THEY ARE RARE IN THESE PARTS
         if (contours.cornerCount(i) == 4) {
             // Push as Possible Screen
@@ -126,22 +128,67 @@ cv.readImage('uploads/testimage2.jpg', function(err, im) {
 
     // Left with Array of Definite Screens
 
-    console.log(possibleScreens); 
+    /*var minx = width;
+    var miny = height;
+    var maxx = 0;
+    var maxy = 0;
 
     // Log all the Vertices of the Screens 
     for (ps in possibleScreens) {
         out.drawContour(contours, possibleScreens[ps], RED);
-        console.log(contours.cornerCount(possibleScreens[ps]));
         for (point = 0; point < contours.cornerCount(possibleScreens[ps]); point++) { 
-            console.log(contours.point(possibleScreens[ps], point));
+            var pt = contours.point(possibleScreens[ps], point);
+            if (pt.x < minx) { minx = pt.x; }
+            if (pt.y < miny) { miny = pt.y; }
+            if (pt.x > maxx) { maxx = pt.x; }
+            if (pt.y > maxy) { maxy = pt.y; }
         }
+    }*/
+
+    function isBlack(r, g, b) {
+        if (r < 60) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    console.log(possibleScreens);
+    for (ps in possibleScreens) {
+        var Jimp = require("jimp");
+        (function(ps){
+            Jimp.read("uploads/testimage2.jpg", function(err, jimg) {
+                jimg.crop(contours.boundingRect(possibleScreens[ps]).x, contours.boundingRect(possibleScreens[ps]).y, contours.boundingRect(possibleScreens[ps]).width, contours.boundingRect(possibleScreens[ps]).height);
+                jimg.invert();
+                jimg.greyscale();
+                jimg.contrast(-0.5);
+
+                for (var x = 0; x < jimg.bitmap.width; x++) {
+                    for (var y = 0; y < jimg.bitmap.height; y++) {
+                        //console.log(parseInt(jimg.getPixelColor(x, y).toString(16).substr(0, 2), 16), x, y);
+                        if (ps == 0) {
+                            //console.log(console.log(Jimp.intToRGBA(jimg.getPixelColor(670, 115)).r));
+                        }
+
+
+                        if (isBlack(Jimp.intToRGBA(jimg.getPixelColor(x, y)).r)) {
+                            //jimg.setPixelColor(parseInt("000000FF", 16), x, y);
+                        } else {
+                            jimg.setPixelColor(parseInt("FFFFFFFF", 16), x, y);
+                        }
+                    }
+                }
+                jimg.write("uploads/screen" + ps + ".png", function(err) {
+                    console.log(err);
+                    var QrCode = require('qrcode-reader');
+                    var qr = new QrCode();
+                    qr.callback = function(result,err) { if(result) console.log("Result: " + result + " : " + ps); console.log(err); }
+                    qr.decode("uploads/screen" + ps + ".png");
+                });
+            });
+        })(ps);
     }
 
     out.save('uploads/detect-shapes.png');
     console.log('Image saved to ./tmp/detect-shapes.png');
 });
-
-var QrCode = require('qrcode-reader');
-var qr = new QrCode();
-qr.callback = function(result,err) { if(result) console.log("Result: " + result); }
-qr.decode("uploads/qrcode.png");
