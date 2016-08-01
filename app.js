@@ -1,7 +1,7 @@
 var fs = require("fs");
 var child_process = require('child_process');
 
-var fps = 1;
+var fps = 30;
 
 var max_constraints = {width: 0, height: 0}; //Any hint of what a contraint might be in this instance?
 
@@ -54,7 +54,7 @@ var GREEN = [0, 255, 0]; // B, G, R
 var WHITE = [255, 255, 255]; // B, G, R
 var slight_grey_ish_color_just_off_green_but_not_quite_blue = [253,254,253] // B, G, R (Big Green Rhombus)...
 
-cv.readImage('uploads/testimage.jpg', function(err, im) {
+cv.readImage('uploads/testimage2.jpg', function(err, im) {
     if (err) throw err; 
 
     width = im.width()
@@ -64,7 +64,9 @@ cv.readImage('uploads/testimage.jpg', function(err, im) {
     var out = new cv.Matrix(height, width);
 
     var lowerBound = [80, 30, 186];
-    var upperBound = [200, 80, 255];
+    //var color = 188, 119, 252
+    //var other color = 220, 116, 250
+    var upperBound = [255, 150, 255];
     im.inRange(lowerBound, upperBound);
 
     im.save("uploads/test.jpg");
