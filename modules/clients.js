@@ -130,33 +130,41 @@ app.post("/upload", upload.single("codes"), function(req, res, next) {
 
 		console.log(possibleScreens);
 		for (ps in possibleScreens) {
-            var Jimp = require("jimp");
-            (function(ps){
-                Jimp.read(req.file.path, function(err, jimg) {
-                    jimg.crop(contours.boundingRect(possibleScreens[ps]).x, contours.boundingRect(possibleScreens[ps]).y, contours.boundingRect(possibleScreens[ps]).width, contours.boundingRect(possibleScreens[ps]).height);
-                    jimg.invert();
-                    jimg.greyscale();
-                    jimg.contrast(-0.5);
+			var Jimp = require("jimp");
+			(function(ps){
+				Jimp.read(req.file.path, function(err, jimg) {
+					jimg.crop(contours.boundingRect(possibleScreens[ps]).x, contours.boundingRect(possibleScreens[ps]).y, contours.boundingRect(possibleScreens[ps]).width, contours.boundingRect(possibleScreens[ps]).height);
+						jimg.invert();
+						jimg.greyscale();
+						jimg.contrast(-0.5);
 
-                    for (var x = 0; x < jimg.bitmap.width; x++) {
-                        for (var y = 0; y < jimg.bitmap.height; y++) {
-                            if (Jimp.intToRGBA(jimg.getPixelColor(x, y)).r > 100) {
-                                jimg.setPixelColor(parseInt("FFFFFFFF", 16), x, y);
-                            }
-                        }
-                    }
+						for (var x = 0; x < jimg.bitmap.width; x++) {
+							for (var y = 0; y < jimg.bitmap.height; y++) {
+								if (Jimp.intToRGBA(jimg.getPixelColor(x, y)).r > 100) {
+									jimg.setPixelColor(parseInt("FFFFFFFF", 16), x, y);
+								}
+							}
+						}
 
-                    jimg.getBuffer(Jimp.MIME_PNG, function(err, buffer) {
-                        var QrCode = require('qrcode-reader');
-                        var qr = new QrCode();
-                        qr.callback = function(result,err) {
-                            if(result) console.log("Code " + result + " is possible screen " + ps);
-                        }
-                        qr.decode("data:image/png;base64," + buffer.toString("base64"));
-                    });
-                });
-            })(ps);
-        }
+						jimg.getBuffer(Jimp.MIME_PNG, function(err, buffer) {
+						var QrCode = require('qrcode-reader');
+						var qr = new QrCode();
+						qr.callback = function(result,err) {
+						if (result) {
+							console.log("Socket ID " + result + " is screen " + ps);
+							} else {
+								console.log("Failed to associate " + ps + " with socket ID via QR code");
+							}
+							if (ps == possibleScreens.length-1) {
+								console.log("Extracted all screens");
+								res.json({msg: "done"});
+							}
+						}
+						qr.decode("data:image/png;base64," + buffer.toString("base64"));
+					});
+				});
+			})(ps);
+		}
 
 		out.save('uploads/detect-shapes.png');
 		console.log('Image saved to uploads/detect-shapes.png');
