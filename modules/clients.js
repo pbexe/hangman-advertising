@@ -150,8 +150,7 @@ app.post("/upload", upload.single("codes"), function(req, res, next) {
                         var QrCode = require('qrcode-reader');
                         var qr = new QrCode();
                         qr.callback = function(result,err) {
-                            if(result) console.log("Result: " + result + " : " + ps);
-                            console.log(err);
+                            if(result) console.log("Code " + result + " is possible screen " + ps);
                         }
                         qr.decode("data:image/png;base64," + buffer.toString("base64"));
                     });
