@@ -162,12 +162,15 @@ cv.readImage('uploads/testimage2.jpg', function(err, im) {
                         }
                     }
                 }
-                jimg.write("uploads/screen" + ps + ".png", function(err) {
-                    console.log(err);
+                jimg.getBuffer(Jimp.MIME_PNG, function(err, buffer) {
                     var QrCode = require('qrcode-reader');
                     var qr = new QrCode();
                     qr.callback = function(result,err) { if(result) console.log("Result: " + result + " : " + ps); console.log(err); }
-                    qr.decode("uploads/screen" + ps + ".png");
+                    qr.decode("data:image/png;base64," + buffer.toString("base64"));
+                });
+                jimg.write("uploads/screen" + ps + ".png", function(err) {
+                    //console.log(err);
+
                 });
             });
         })(ps);
