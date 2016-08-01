@@ -145,14 +145,6 @@ cv.readImage('uploads/testimage2.jpg', function(err, im) {
         }
     }*/
 
-    function isBlack(r, g, b) {
-        if (r < 60) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     console.log(possibleScreens);
     for (ps in possibleScreens) {
         var Jimp = require("jimp");
@@ -165,15 +157,7 @@ cv.readImage('uploads/testimage2.jpg', function(err, im) {
 
                 for (var x = 0; x < jimg.bitmap.width; x++) {
                     for (var y = 0; y < jimg.bitmap.height; y++) {
-                        //console.log(parseInt(jimg.getPixelColor(x, y).toString(16).substr(0, 2), 16), x, y);
-                        if (ps == 0) {
-                            //console.log(console.log(Jimp.intToRGBA(jimg.getPixelColor(670, 115)).r));
-                        }
-
-
-                        if (isBlack(Jimp.intToRGBA(jimg.getPixelColor(x, y)).r)) {
-                            //jimg.setPixelColor(parseInt("000000FF", 16), x, y);
-                        } else {
+                        if (Jimp.intToRGBA(jimg.getPixelColor(x, y)).r > 100) {
                             jimg.setPixelColor(parseInt("FFFFFFFF", 16), x, y);
                         }
                     }
