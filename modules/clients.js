@@ -29,6 +29,8 @@ var WHITE = [255, 255, 255]; // B, G, R
 var slight_grey_ish_color_just_off_green_but_not_quite_blue = [253, 254, 253] // B, G, R (Big Green Rhombus)...
 
 var cv = require("opencv"); //I dont want to publish my CV to the interwebs... OK OK, I worked as a psychologist for a while, I'm ashamed of myself too...
+var Canvas = require("canvas");
+global.Image = Canvas.Image;
 
 var lowThresh = 0;
 var highThresh = 100;

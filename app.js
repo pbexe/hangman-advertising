@@ -2,9 +2,6 @@ var fs = require("fs");
 var child_process = require('child_process');
 
 var fps = 30;
-var canvas = require("canvas");
-global.Image = canvas.Image;
-
 
 var max_constraints = {width: 0, height: 0}; //Any hint of what a contraint might be in this instance?
 
