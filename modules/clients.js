@@ -131,7 +131,7 @@ app.post("/upload", upload.single("codes"), function(req, res, next) {
 		for (ps in possibleScreens) {
             var Jimp = require("jimp");
             (function(ps){
-                Jimp.read("uploads/testimage2.jpg", function(err, jimg) {
+                Jimp.read(req.file.path, function(err, jimg) {
                     jimg.crop(contours.boundingRect(possibleScreens[ps]).x, contours.boundingRect(possibleScreens[ps]).y, contours.boundingRect(possibleScreens[ps]).width, contours.boundingRect(possibleScreens[ps]).height);
                     jimg.invert();
                     jimg.greyscale();
