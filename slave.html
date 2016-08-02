@@ -1,86 +1,86 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Hangman Advertising</title>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+	<title>Hangman Advertising</title>
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 <body class="configuration">
-    <configure>
-        <img id="configure" style="height:400px;width:400px;margin-left:calc(50vw - 200px);margin-right:calc(50vw - 200px);margin-top:calc(50vh - 200px);" />
-    </configure>
-    <render>
-        <img id="render" style="height:100vh;width:100vw;" />
-    </render>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
-    <statistics>
-        <p class="latency"></p>
-        <p class="fps"></p>
-    </statistics>
-    <script>
-        var socket = io();
-        var dt_latest = 0;
+	<configure>
+		<img id="configure" style="height:400px;width:400px;margin-left:calc(50vw - 200px);margin-right:calc(50vw - 200px);margin-top:calc(50vh - 200px);" />
+	</configure>
+	<render>
+		<img id="render" style="height:100vh;width:100vw;" />
+	</render>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+	<statistics>
+		<p class="latency"></p>
+		<p class="fps"></p>
+	</statistics>
+	<script>
+		var socket = io();
+		var dt_latest = 0;
 
-        console.log(window.devicePixelRatio);
-        console.log(navigator.userAgent);
+		console.log(window.devicePixelRatio);
+		console.log(navigator.userAgent);
 
-        function sendConstraints(){
-            socket.emit("constraints", {
-                width: $(document).width(),
-                height: $(document).height()
-            });
-        }
+		function sendConstraints(){
+			socket.emit("constraints", {
+				width: $(document).width(),
+				height: $(document).height()
+			});
+		}
 
-        socket.on("connect", function(packet){
-        	sendConstraints();
-        });
+		socket.on("connect", function(packet){
+			sendConstraints();
+		});
 
-        socket.on("configure", function(packet){
-            console.log("Configuration mode");
-            $("body").removeClass("configuration").addClass("configuration");
-            socket.emit("get code", {}, function(packet){
-                $("img#configure").attr("src", packet);
-            });
-            sendConstraints();
-        });
+		socket.on("configure", function(packet){
+			console.log("Configuration mode");
+			$("body").removeClass("configuration").addClass("configuration");
+			socket.emit("get code", {}, function(packet){
+				$("img#configure").attr("src", packet);
+			});
+			sendConstraints();
+		});
 
-        socket.on("render", function() {
-            console.log("Render mode");
-            $("body").removeClass("configuration");
-        });
+		socket.on("render", function() {
+			console.log("Render mode");
+			$("body").removeClass("configuration");
+		});
 
-        socket.on("position", function(vertices) {
-            console.log(vertices);
-            $("p.fps").text(vertices);
-        });
+		socket.on("position", function(vertices) {
+			console.log(vertices);
+			$("p.fps").text(vertices);
+		});
 
-        var count = 0;
+		var count = 0;
 
-        setInterval(function() {
-            $("p.fps").text("FPS: " + count);
-            count = 0;
-        }, 1000);
+		setInterval(function() {
+			$("p.fps").text("FPS: " + count);
+			count = 0;
+		}, 1000);
 
-        socket.on("frame", function(packet){
-            if (dt_latest <= packet.dt) {
-                dt_latest = packet.dt;
-                $("img#render").attr("src", packet.frame);
-                $("p.latency").text("Latency: " + (Date.now() - packet.time) + "ms");
-                count ++;
-            } else {
-                console.log("Frame Skip");
-            }
-        });
+		socket.on("frame", function(packet){
+			if (dt_latest <= packet.dt) {
+				dt_latest = packet.dt;
+				$("img#render").attr("src", packet.frame);
+				$("p.latency").text("Latency: " + (Date.now() - packet.time) + "ms");
+				count ++;
+			} else {
+				console.log("Frame Skip");
+			}
+		});
 
-        socket.on("reload", function(packet){
-            window.location.reload();
-        });
-        socket.on("load", function(packet){
-            window.location.href = packet.msg;
-        });
-    </script>
+		socket.on("reload", function(packet){
+			window.location.reload();
+		});
+		socket.on("load", function(packet){
+			window.location.href = packet.msg;
+		});
+	</script>
 </body>
 </html>
