@@ -220,7 +220,7 @@ function checkConfigured() {
 }
 
 function render() {
-    //io.emit("render");
+    io.emit("render");
 }
 
 // Socket.IO

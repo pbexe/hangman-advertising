@@ -90,3 +90,5 @@ ENV/
 
 node_modules/
 uploads/
+
+*.scssc
