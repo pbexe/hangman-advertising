@@ -1,4 +1,5 @@
 var Canvas = require('canvas');
+var Image = Canvas.Image;
 
 function toColour(num) {
     num >>>= 0;
@@ -13,7 +14,6 @@ function toColour(num) {
 }
 
 process.on("message", function(dt) {
-    var Image = Canvas.Image;
     var canvas = new Canvas(800, 800, "jpg");
 
     var bg = canvas.getContext("2d");

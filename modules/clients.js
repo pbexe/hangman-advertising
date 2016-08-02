@@ -9,20 +9,15 @@ var io = require('socket.io')(http);
 
 var QRCodeGenerator = require('qrcode');
 var QRCodeReaderModule = require('qrcode-reader');
-var QRCodeReader = new QRCodeReaderModule();
 var Jimp = require("jimp");
 
 var socketClients = [];
-var canvas = new Object();
 var rendering = true;
-
-var cv = require("opencv"); //I dont want to publish my CV to the interwebs... OK OK, I worked as a psychologist for a while, I'm ashamed of myself too...
 
 var lowThresh = 0;
 var highThresh = 100;
 var nIters = 2;
 var minArea = 2000;
-
 var BLUE = [0, 255, 0]; // B, G, R
 var RED = [0, 0, 255]; // B, G, R
 var GREEN = [0, 255, 0]; // B, G, R
@@ -52,7 +47,6 @@ app.get('/', function(req, res) {
 });
 
 app.get('/master', function(req, res) {
-
     res.sendfile('master.html');
 });
 
@@ -129,52 +123,50 @@ app.post("/upload", upload.single("codes"), function(req, res, next) {
 
 		// Left with Array of Definite Screens
 
-        canvasSize = { width: width, height: height };
-
 		console.log(possibleScreens);
 		for (ps in possibleScreens) {
-			var Jimp = require("jimp");
 			(function(ps){
 				Jimp.read(req.file.path, function(err, jimg) {
-					jimg.crop(contours.boundingRect(possibleScreens[ps]).x, contours.boundingRect(possibleScreens[ps]).y, contours.boundingRect(possibleScreens[ps]).width, contours.boundingRect(possibleScreens[ps]).height);
-                    jimg.invert();
-                    jimg.greyscale();
-                    jimg.contrast(-0.5);
+					var cbr = contours.boundingRect(possibleScreens[ps])
+					jimg.crop(cbr.x, cbr.y, cbr.width, cbr.height);
+					jimg.invert();
+					jimg.greyscale();
+					jimg.contrast(-0.5);
 
-                    for (var x = 0; x < jimg.bitmap.width; x++) {
-                        for (var y = 0; y < jimg.bitmap.height; y++) {
-                            if (Jimp.intToRGBA(jimg.getPixelColor(x, y)).r > 100) {
-                                jimg.setPixelColor(parseInt("FFFFFFFF", 16), x, y);
-                            }
-                        }
-                    }
+					for (var x = 0; x < jimg.bitmap.width; x++) {
+						for (var y = 0; y < jimg.bitmap.height; y++) {
+							if (Jimp.intToRGBA(jimg.getPixelColor(x, y)).r > 100) {
+								jimg.setPixelColor(parseInt("FFFFFFFF", 16), x, y);
+							}
+						}
+					}
 
-                    jimg.getBuffer(Jimp.MIME_PNG, function(err, buffer) {
-                        //console.log(buffer.toString("base64"));
-                        //console.log("\n \n \n \n \n \n");
+					jimg.getBuffer(Jimp.MIME_PNG, function(err, buffer) {
+						//console.log(buffer.toString("base64"));
+						//console.log("\n \n \n \n \n \n");
 
-                        var qr = new QRCodeReaderModule();
+						var qr = new QRCodeReaderModule();
 
-                        qr.callback = function(result,err) {
-                            //console.log(err);
-                            console.log("Result: " + result + " : " + ps);
-                            //console.log(possibleScreens[ps]);
-                            //sendDisplayPoints(ps, contours.point(possibleScreens[ps], 0), contours.point(possibleScreens[ps], 1), contours.point(possibleScreens[ps], 2), contours.point(possibleScreens[ps], 3));
-                            console.log(socketClients);
-                            //console.log(result);
-                            //socketClients[result].vertices = [contours.point(possibleScreens[ps], 0), contours.point(possibleScreens[ps], 1), contours.point(possibleScreens[ps], 2), contours.point(possibleScreens[ps], 3)];
-                            //process.send({ type: "screensize", content: { vertices: socketClients[result].vertices, id: result } });
-                        }
-                        //console.log("data:image/png;base64," + buffer.toString("base64"));
-                        qr.decode("data:image/png;base64," + buffer.toString("base64"));
-                    });
+						qr.callback = function(result,err) {
+							//console.log(err);
+							console.log("Result: " + result + " : " + ps);
+							//console.log(possibleScreens[ps]);
+							//sendDisplayPoints(ps, contours.point(possibleScreens[ps], 0), contours.point(possibleScreens[ps], 1), contours.point(possibleScreens[ps], 2), contours.point(possibleScreens[ps], 3));
+							console.log(socketClients);
+							//console.log(result);
+							//socketClients[result].vertices = [contours.point(possibleScreens[ps], 0), contours.point(possibleScreens[ps], 1), contours.point(possibleScreens[ps], 2), contours.point(possibleScreens[ps], 3)];
+							//process.send({ type: "screensize", content: { vertices: socketClients[result].vertices, id: result } });
+						}
+						//console.log("data:image/png;base64," + buffer.toString("base64"));
+						qr.decode("data:image/png;base64," + buffer.toString("base64"));
+					});
 
-                    jimg.write("uploads/screen" + ps + ".png", function(err) {
+					jimg.write("uploads/screen" + ps + ".png", function(err) {
 
-                    });
-                });
-            })(ps);
-        }
+					});
+				});
+			})(ps);
+		}
 
 		out.save('uploads/detect-shapes.png');
 		console.log('Image saved to uploads/detect-shapes.png');
@@ -252,8 +244,7 @@ io.on('connection', function(socket) {
 
     socket.on("get code", function(packet, callback) {
         QRCodeGenerator.draw(getSocketIndex(socket.id).toString(), function(err, canvas) {
-            var buffer = canvas.toBuffer();
-            Jimp.read(buffer, function(err, image) {
+            Jimp.read(canvas.toBuffer(), function(err, image) {
                 for (var y = 0; y < image.bitmap.width; y++) {
                     for (var x = 0; x < image.bitmap.height; x++) {
                         if (image.getPixelColor(x, y) == parseInt("FFFFFFFF", 16)) {
