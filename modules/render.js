@@ -14,7 +14,7 @@ function toColour(num) {
 
 process.on("message", function(dt) {
     var Image = Canvas.Image;
-    var canvas = new Canvas(800, 800, "svg");
+    var canvas = new Canvas(800, 800, "jpg");
 
     var bg = canvas.getContext("2d");
     bg.rect(0,0, canvas.width, canvas.height);
@@ -22,7 +22,7 @@ process.on("message", function(dt) {
     bg_gradient.addColorStop(0, '#8ED6FF');
     // bg_gradient.addColorStop(1, '#004CB3');
     //console.log(toColour(dt));
-    bg_gradient.addColorStop(1, toColour(dt));
+    bg_gradient.addColorStop(1, toColour(255));
     bg.fillStyle = bg_gradient;
     bg.fill();
 
@@ -43,7 +43,14 @@ process.on("message", function(dt) {
     //require("fs").writeFile("out.svg", canvas.toBuffer());
     //console.log("data:image/svg+xml;utf8," + canvas.toBuffer().toString().replace(/[\r\n]/g, "").replace('<?xml version="1.0" encoding="UTF-8"?>', ""));
 
-    process.send({
+    /*process.send({
         frame: "data:image/svg+xml;utf8," + canvas.toBuffer().toString().replace(/[\r\n]/g, "").replace('<?xml version="1.0" encoding="UTF-8"?>', ""), dt: dt
+    });*/
+
+    //console.log(canvas.toDataURL());
+
+    process.send({
+        frame: canvas.toDataURL(),
+        dt: dt
     });
 });

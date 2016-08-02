@@ -51,10 +51,16 @@
             console.log("Render mode");
             $("body").removeClass("configuration");
         });
+
+        socket.on("position", function(vertices) {
+            console.log(vertices);
+            $("p.fps").text(vertices);
+        });
+
         var count = 0;
 
         setInterval(function() {
-            $("p.fps").text("FPS: " + count);
+            //$("p.fps").text("FPS: " + count);
             count = 0;
         }, 1000);
 

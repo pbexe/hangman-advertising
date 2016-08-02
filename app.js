@@ -1,7 +1,7 @@
 var fs = require("fs");
 var child_process = require('child_process');
 
-var fps = 30;
+var fps = 2;
 
 var max_constraints = {width: 0, height: 0}; //Any hint of what a contraint might be in this instance?
 
@@ -20,7 +20,11 @@ communicator.on("message", function(message) {
 				height: max_constraints.height
 			}
 		}));
-	}
+	} else if (message.type = "screensize") {
+        var crop = child_process.fork("modules/crop.js");
+        console.log(message);
+        crop.send(JSON.stringify(message.content));
+    }
 });
 
 // Delta Time

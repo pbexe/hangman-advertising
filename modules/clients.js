@@ -13,6 +13,7 @@ var QRCodeReader = new QRCodeReaderModule();
 var Jimp = require("jimp");
 
 var socketClients = [];
+var canvas = new Object();
 var rendering = true;
 
 var cv = require("opencv"); //I dont want to publish my CV to the interwebs... OK OK, I worked as a psychologist for a while, I'm ashamed of myself too...
@@ -93,7 +94,7 @@ app.post("/upload", upload.single("codes"), function(req, res, next) {
 			var arcLength = contours.arcLength(i, true);
 			contours.approxPolyDP(i, 0.01 * arcLength, true);
 
-			out.drawContour(contours, i, GREEN);
+			out.drawContour(contours, i, RED);
 
 			// Test if Contour has more than 4 Vertices
 			if (contours.cornerCount(i) == 4) {
@@ -114,7 +115,7 @@ app.post("/upload", upload.single("codes"), function(req, res, next) {
 								((cbr.i.x + cbr.i.width) > (cbr.s.x + cbr.s.width)) &&
 								((cbr.i.y + cbr.i.height) > (cbr.s.y + cbr.s.height))) {
 								// Contours that Lie Inside Another Contour
-								//out.drawContour(contours, s, GREEN);
+								out.drawContour(contours, s, GREEN);
 								if (possibleScreens.indexOf(s) > -1) {
 									// Remove these Contours from the Array of Possible Screens
 									possibleScreens.splice(possibleScreens.indexOf(s), 1);
@@ -127,6 +128,8 @@ app.post("/upload", upload.single("codes"), function(req, res, next) {
 		}
 
 		// Left with Array of Definite Screens
+
+        canvasSize = { width: width, height: height };
 
 		console.log(possibleScreens);
 		for (ps in possibleScreens) {
@@ -147,13 +150,27 @@ app.post("/upload", upload.single("codes"), function(req, res, next) {
                     }
 
                     jimg.getBuffer(Jimp.MIME_PNG, function(err, buffer) {
-                        var QrCode = require('qrcode-reader');
-                        var qr = new QrCode();
+                        //console.log(buffer.toString("base64"));
+                        //console.log("\n \n \n \n \n \n");
+
+                        var qr = new QRCodeReaderModule();
+
                         qr.callback = function(result,err) {
-                            if(result) console.log("Result: " + result + " : " + ps);
-                            console.log(err);
+                            //console.log(err);
+                            console.log("Result: " + result + " : " + ps);
+                            //console.log(possibleScreens[ps]);
+                            //sendDisplayPoints(ps, contours.point(possibleScreens[ps], 0), contours.point(possibleScreens[ps], 1), contours.point(possibleScreens[ps], 2), contours.point(possibleScreens[ps], 3));
+                            console.log(socketClients);
+                            //console.log(result);
+                            //socketClients[result].vertices = [contours.point(possibleScreens[ps], 0), contours.point(possibleScreens[ps], 1), contours.point(possibleScreens[ps], 2), contours.point(possibleScreens[ps], 3)];
+                            //process.send({ type: "screensize", content: { vertices: socketClients[result].vertices, id: result } });
                         }
+                        //console.log("data:image/png;base64," + buffer.toString("base64"));
                         qr.decode("data:image/png;base64," + buffer.toString("base64"));
+                    });
+
+                    jimg.write("uploads/screen" + ps + ".png", function(err) {
+
                     });
                 });
             })(ps);
@@ -174,6 +191,10 @@ app.get("/emit", function(req, res) {
         params: [req.query.command, req.query.msg]
     });
 });
+
+function sendDisplayPoints(id, v1, v2, v3, v4) {
+    //io.to(socketClients[parseInt(id)]).emit("position", { vertex1: v1, vertex2: v2, vertex3: v3, vertex4: v4 });
+}
 
 function getSocketIndex(id) {
     for (var i = 0; i < socketClients.length; i++) {
@@ -199,7 +220,7 @@ function checkConfigured() {
 }
 
 function render() {
-    io.emit("render");
+    //io.emit("render");
 }
 
 // Socket.IO
