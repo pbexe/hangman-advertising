@@ -1,27 +1,44 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Admin Page</title>
-</head>
-
-<body>
-    <button id="configure">Configure</button>
-    <form action="/upload" method="POST" enctype="multipart/form-data">
-        <input type="file" value="Render" id="render" name="codes" />
-        <input type="Submit" value="Upload" />
-    </form>
-
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
-
-    <script>
-        $("#configure").click(function() {
-            $.get("/configure");
-        });
-
-        $("#render").click(function() {
-            $.get("/render");
-        });
-    </script>
-</body>
+	<head>
+		<title>Admin Page</title>
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+		<link rel="stylesheet" type="text/css" href="css/style.css">
+	</head>
+	<body class="master">
+		<div class="container">
+			<button id="configure">Configure</button>
+			<form action="/upload" method="POST" enctype="multipart/form-data">
+				<label class="uploadLabel">
+					<input type="file" value="Render" id="render" name="codes" />
+					<span class="button">Select file</span>
+				</label>
+				<button type="submit" class="hidden">Upload</button>
+			</form>
+		</div>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+		<script>
+			$("#configure").on("click", function() {
+				$.get("/configure");
+			});
+			$("#render").on({
+				click: function() {
+					$.get("/render");
+				},
+				change: function() {
+					console.log(this.files);
+					console.log(this.files.length);
+					if (this.files.length){
+						$(".uploadLabel").addClass("hidden");
+						$("button[type='submit']").text("Upload " + this.files.item(0).name).removeClass("hidden");
+					} else {
+						$("button[type='submit']").text("Upload").addClass("hidden");
+					}
+				}
+			});
+		</script>
+	</body>
 </html>
