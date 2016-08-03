@@ -131,12 +131,17 @@ app.post("/upload", upload.single("codes"), function(req, res, next) {
 
         canvasSize = { width: width, height: height };
 
-		console.log(possibleScreens);
+		console.log("Pos Screens: " + possibleScreens);
+        console.log("Uploaded File: " + req.file.path);
 		for (ps in possibleScreens) {
 			var Jimp = require("jimp");
 			(function(ps){
 				Jimp.read(req.file.path, function(err, jimg) {
+                    jimg.write("uploads/screen" + ps + "pre.png", function(err) {
+
+                    });
 					jimg.crop(contours.boundingRect(possibleScreens[ps]).x, contours.boundingRect(possibleScreens[ps]).y, contours.boundingRect(possibleScreens[ps]).width, contours.boundingRect(possibleScreens[ps]).height);
+                    console.log("Crop Area: " + contours.boundingRect(possibleScreens[ps]).x, contours.boundingRect(possibleScreens[ps]).y, contours.boundingRect(possibleScreens[ps]).width, contours.boundingRect(possibleScreens[ps]).height);
                     jimg.invert();
                     jimg.greyscale();
                     jimg.contrast(-0.5);
@@ -157,10 +162,12 @@ app.post("/upload", upload.single("codes"), function(req, res, next) {
 
                         qr.callback = function(result,err) {
                             //console.log(err);
-                            console.log("Result: " + result + " : " + ps);
+                            console.log("Error:  " + err);
+                            console.log("Result: " + result);
+                            console.log("PS Val: " + ps);
                             //console.log(possibleScreens[ps]);
                             //sendDisplayPoints(ps, contours.point(possibleScreens[ps], 0), contours.point(possibleScreens[ps], 1), contours.point(possibleScreens[ps], 2), contours.point(possibleScreens[ps], 3));
-                            console.log(socketClients);
+                            console.log("socketClients: " + socketClients);
                             //console.log(result);
                             //socketClients[result].vertices = [contours.point(possibleScreens[ps], 0), contours.point(possibleScreens[ps], 1), contours.point(possibleScreens[ps], 2), contours.point(possibleScreens[ps], 3)];
                             //process.send({ type: "screensize", content: { vertices: socketClients[result].vertices, id: result } });

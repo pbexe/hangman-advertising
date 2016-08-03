@@ -1,7 +1,7 @@
 var fs = require("fs");
 var child_process = require('child_process');
 
-var fps = 2;
+var fps = 1;
 
 var max_constraints = {width: 0, height: 0}; //Any hint of what a contraint might be in this instance?
 
