@@ -14,7 +14,7 @@ function toColour(num) {
 }
 
 process.on("message", function(dt) {
-	var canvas = new Canvas(800, 800, "jpg");
+	var canvas = new Canvas(2800, 2800, "jpg");
 
 	var bg = canvas.getContext("2d");
 	bg.rect(0,0, canvas.width, canvas.height);
@@ -49,8 +49,8 @@ process.on("message", function(dt) {
 
 	//console.log(canvas.toDataURL());
 
-	process.send({
-		frame: canvas.toDataURL(),
+	process.send(JSON.stringify({
+		frame: canvas.toBuffer(),
 		dt: dt
-	});
+	}));
 });

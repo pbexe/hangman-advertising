@@ -1,5 +1,6 @@
 var fs = require("fs");
 var child_process = require('child_process');
+var crop = child_process.fork("modules/crop.js");
 
 var fps = 1;
 
@@ -9,7 +10,7 @@ var max_constraints = {width: 0, height: 0}; //Any hint of what a contraint migh
 var communicator = child_process.fork("modules/clients.js"); //Create process to run webserver
 communicator.on("message", function(message) {
 	message = JSON.parse(message);
-	if (message.type = "constraints") {
+	if (message.type == "constraints") {
 		if (max_constraints.width < message.contents.width) max_constraints.width = message.contents.width;
 		if (max_constraints.height < message.contents.height) max_constraints.height = message.contents.height; //This nested nested one line if statement was why python was invented...
 		console.log("New constraints are " + max_constraints.width + "x" + max_constraints.height);
@@ -20,10 +21,9 @@ communicator.on("message", function(message) {
 				height: max_constraints.height
 			}
 		}));
-	} else if (message.type = "screensize") {
-        var crop = child_process.fork("modules/crop.js");
-        console.log(message);
-        crop.send(JSON.stringify(message.content));
+	} else if (message.type == "screensize") {
+        console.log("Message: " + message);
+        crop.send(JSON.stringify(message));
     }
 });
 
@@ -39,8 +39,11 @@ setInterval(function() {
     dt++;
 
     renderer.on("message", function(frame) {
-        communicator.send(JSON.stringify({ frame: frame.frame,
-        		dt: frame.dt, time: Date.now() }));
+        crop.send(JSON.stringify({ type: "frame", content: JSON.parse(frame).frame, dt: JSON.parse(frame).dt }));
         renderer.kill("SIGINT"); //Killing is bad, but killing processes is all in a days work, at least its not SIGKILL, because that would always be fatal - http://www.gnu.org/software/libc/manual/html_node/Termination-Signals.html
     });
 }, 1000/fps);
+
+crop.on("message", function(frame) {
+     communicator.send(JSON.stringify({ frame: frame.frame, dt: frame.dt, time: Date.now() }));
+});

@@ -1,5 +1,6 @@
 var express = require("express");
 var multer = require("multer");
+var piexif = require("piexifjs");
 var upload = multer({
     dest: "uploads/"
 });
@@ -10,6 +11,7 @@ var io = require('socket.io')(http);
 var QRCodeGenerator = require('qrcode');
 var QRCodeReaderModule = require('qrcode-reader');
 var Jimp = require("jimp");
+var fs = require("fs");
 
 var socketClients = [];
 var rendering = true;
@@ -61,6 +63,21 @@ app.get("/render", function(req, res) {
 });
 
 app.post("/upload", upload.single("codes"), function(req, res, next) {
+    var jpeg = fs.readFileSync(req.file.path);
+    //console.log(jpeg);
+    var data = jpeg.toString("binary");
+
+    var zeroth = {};
+    zeroth[piexif.ImageIFD.Orientation] = 1;
+
+    var exifObj = {"0th": zeroth};
+    var exifBytes = piexif.dump(exifObj);
+
+    var newdata = piexif.insert(exifBytes, data);
+    var newjpeg = new Buffer(newdata, "binary");
+
+    fs.writeFileSync(req.file.path, newjpeg);
+
 	cv.readImage(req.file.path, function(err, im) {
 		width = im.width()
 		height = im.height()
@@ -129,7 +146,7 @@ app.post("/upload", upload.single("codes"), function(req, res, next) {
 		for (ps in possibleScreens) {
 			(function(ps){
 				Jimp.read(req.file.path, function(err, jimg) {
-                    jimg.write("uploads/screen" + ps + "pre.png", function(err) {
+                    jimg.write("uploads/screen" + ps + "pre.jpg", function(err) {
 
                     });
 					jimg.crop(contours.boundingRect(possibleScreens[ps]).x, contours.boundingRect(possibleScreens[ps]).y, contours.boundingRect(possibleScreens[ps]).width, contours.boundingRect(possibleScreens[ps]).height);
@@ -159,10 +176,10 @@ app.post("/upload", upload.single("codes"), function(req, res, next) {
                             console.log("PS Val: " + ps);
                             //console.log(possibleScreens[ps]);
                             //sendDisplayPoints(ps, contours.point(possibleScreens[ps], 0), contours.point(possibleScreens[ps], 1), contours.point(possibleScreens[ps], 2), contours.point(possibleScreens[ps], 3));
-                            console.log("socketClients: " + socketClients);
+                            console.log("socketClients: " + JSON.stringify(socketClients));
                             //console.log(result);
-                            //socketClients[result].vertices = [contours.point(possibleScreens[ps], 0), contours.point(possibleScreens[ps], 1), contours.point(possibleScreens[ps], 2), contours.point(possibleScreens[ps], 3)];
-                            //process.send({ type: "screensize", content: { vertices: socketClients[result].vertices, id: result } });
+                            socketClients[result].vertices = [contours.point(possibleScreens[ps], 0), contours.point(possibleScreens[ps], 1), contours.point(possibleScreens[ps], 2), contours.point(possibleScreens[ps], 3)];
+                            process.send(JSON.stringify({ type: "screensize", content: { vertices: socketClients[result].vertices, screen: socketClients[result] , id: result } }));
                         }
                         //console.log("data:image/png;base64," + buffer.toString("base64"));
                         qr.decode("data:image/png;base64," + buffer.toString("base64"));
