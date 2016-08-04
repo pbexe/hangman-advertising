@@ -297,6 +297,6 @@ http.listen(3000, function() {
 process.on("message", function(message) {
 	if (rendering == true) {
 		io.to(JSON.parse(message).socket).emit("frame", JSON.parse(message));
-        console.log("emitting");
+        console.log("emitting to: " + JSON.parse(message).socket);
 	}
 });

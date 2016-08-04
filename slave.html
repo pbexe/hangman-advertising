@@ -73,6 +73,7 @@
 			} else {
 				console.log("Frame Skip");
 			}
+            $("p.latency").text(packet.dt);
 		});
 
 		socket.on("reload", function(packet){

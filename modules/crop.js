@@ -104,7 +104,7 @@ process.on("message", function(messagestring) {
 
             for (screensize in screensizes) {
                 (function(screensize) {
-                    cv.readImage("uploads/screen0pre.jpg", function(err, mat) {
+                    cv.readImage(buffer, function(err, mat) {
                         console.log("screensize: " + screensize);
                         var v = screensizes[screensize].vertices;
                         var s = screensizes[screensize].screen;
