@@ -2,12 +2,12 @@ var Canvas = require('canvas');
 var fs = require("fs");
 var Image = Canvas.Image;
 
-var width = 800;
-var height = 600;
+var width = 3264;
+var height = 2448;
 var canvas = new Canvas(width, height, "jpg");
 
 var maxRadius = 50;
-var minRadius = 0;
+var minRadius = 30;
 
 function randInt(min, max){
 	return Math.floor(Math.random()*(max-min+1)+min);
@@ -110,9 +110,8 @@ var imageContext = canvas.getContext('2d');
 			}
 		}
 
-		// var data = canvas.toDataURL().replace(/^data:image\/\w+;base64,/, "");
-		// var buf = new Buffer(data, 'base64');
-
+        var data = canvas.toBuffer();
+        //fs.writeFile("renders/render" + dt + ".png", data);
 		process.send(JSON.stringify({
 			frame: canvas.toBuffer(),
 			dt: dt

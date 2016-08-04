@@ -2,7 +2,8 @@ var fs = require("fs");
 var child_process = require('child_process');
 var crop = child_process.fork("modules/crop.js");
 
-var fps = 1;
+var fps = 6;
+var rendering = false;
 
 var max_constraints = {width: 0, height: 0}; //Any hint of what a contraint might be in this instance?
 
@@ -24,6 +25,9 @@ communicator.on("message", function(message) {
 	} else if (message.type == "screensize") {
         console.log("Message: " + message);
         crop.send(JSON.stringify(message));
+    } else if (message.type == "rendering") {
+        console.log(message.contents);
+        rendering = message.contents;
     }
 });
 
@@ -32,18 +36,21 @@ var dt = 0;
 
 // Render Loop
 setInterval(function() {
-    var renderer = child_process.fork("modules/render.js"); // Create Child process to render canvas on request
+    if (rendering == true) {
+        var renderer = child_process.fork("modules/render.js"); // Create Child process to render canvas on request
 
-    renderer.send(dt);
+        renderer.send(dt);
 
-    dt++;
+        dt++;
 
-    renderer.on("message", function(frame) {
-    	frame = JSON.parse(frame);
-    	// console.log(frame)
-        crop.send(JSON.stringify({ type: "frame", content: frame.frame, dt: frame.dt }));
-        renderer.kill("SIGINT"); //Killing is bad, but killing processes is all in a days work, at least its not SIGKILL, because that would always be fatal - http://www.gnu.org/software/libc/manual/html_node/Termination-Signals.html
-    });
+        renderer.on("message", function(frame) {
+            frame = JSON.parse(frame);
+            console.log("Generated frame " + frame.dt);
+            // console.log(frame)
+            crop.send(JSON.stringify({ type: "frame", content: frame.frame, dt: frame.dt }));
+            renderer.kill("SIGINT"); //Killing is bad, but killing processes is all in a days work, at least its not SIGKILL, because that would always be fatal - http://www.gnu.org/software/libc/manual/html_node/Termination-Signals.html
+        });
+    }
 }, 1000/fps);
 
 crop.on("message", function(framestring) {

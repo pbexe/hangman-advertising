@@ -6,6 +6,7 @@ process.on("message", function(messagestring) {
     //console.log("Type: " + message.type);
     if (message.type == "screensize") {
         //console.log(message.content);
+        console.log("Hello!");
         screensizes.push(message.content);
     } else if (message.type == "frame") {
         if (screensizes.length > 0) {
@@ -203,6 +204,7 @@ process.on("message", function(messagestring) {
                         mat.warpPerspective(transformationMatrix, s.width, s.height, [255, 255, 255]);
                         console.log("hey");
                         console.log(JSON.stringify(s));
+                        //mat.save("renders/render" + message.dt + ".png");
                         process.send(JSON.stringify({ frame: mat.toBuffer().toString("base64"), dt: message.dt, socket: s.id }));
                     });
                 })(screensize);

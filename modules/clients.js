@@ -54,6 +54,7 @@ app.get('/master', function(req, res) {
 
 app.get("/configure", function(req, res) {
     rendering = false;
+    process.send(JSON.stringify({ type: "rendering", contents: false }));
     io.emit("configure");
 });
 
@@ -233,6 +234,7 @@ function checkConfigured() {
 }
 
 function render() {
+    process.send(JSON.stringify({ type: "rendering", contents: true }));
     rendering = true;
 	io.emit("render");
 }
