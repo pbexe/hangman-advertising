@@ -67,7 +67,7 @@
 		socket.on("frame", function(packet){
 			if (dt_latest <= packet.dt) {
 				dt_latest = packet.dt;
-				$("img#render").attr("src", packet.frame);
+				$("img#render").attr("src", "data:image/jpg;base64," + packet.frame);
 				$("p.latency").text("Latency: " + (Date.now() - packet.time) + "ms");
 				count ++;
 			} else {

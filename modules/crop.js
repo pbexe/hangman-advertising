@@ -202,7 +202,8 @@ process.on("message", function(messagestring) {
 
                         mat.warpPerspective(transformationMatrix, s.width, s.height, [255, 255, 255]);
                         console.log("hey");
-                        mat.save("uploads/" + screensize + ".png");
+                        console.log(JSON.stringify(s));
+                        process.send(JSON.stringify({ frame: mat.toBuffer().toString("base64"), dt: message.dt, socket: s.id }));
                     });
                 })(screensize);
             }

@@ -44,6 +44,8 @@ setInterval(function() {
     });
 }, 1000/fps);
 
-crop.on("message", function(frame) {
-     communicator.send(JSON.stringify({ frame: frame.frame, dt: frame.dt, time: Date.now() }));
+crop.on("message", function(framestring) {
+    var frame = JSON.parse(framestring);
+    console.log("Transmit Frame");
+    communicator.send(JSON.stringify({ frame: frame.frame, device: frame.device, dt: frame.dt, time: Date.now(), socket: frame.socket }));
 });

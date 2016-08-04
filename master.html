@@ -25,9 +25,6 @@
 				$.get("/configure");
 			});
 			$("#render").on({
-				click: function() {
-					$.get("/render");
-				},
 				change: function() {
 					console.log(this.files);
 					console.log(this.files.length);

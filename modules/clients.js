@@ -57,12 +57,8 @@ app.get("/configure", function(req, res) {
     io.emit("configure");
 });
 
-app.get("/render", function(req, res) {
-    rendering = true;
-    io.emit("render");
-});
-
 app.post("/upload", upload.single("codes"), function(req, res, next) {
+    render();
     var jpeg = fs.readFileSync(req.file.path);
     //console.log(jpeg);
     var data = jpeg.toString("binary");
@@ -195,7 +191,7 @@ app.post("/upload", upload.single("codes"), function(req, res, next) {
 		out.save('uploads/detect-shapes.png');
 		console.log('Image saved to uploads/detect-shapes.png');
 	});
-	configure();
+	//configure();
 });
 
 app.get("/emit", function(req, res) {
@@ -237,6 +233,7 @@ function checkConfigured() {
 }
 
 function render() {
+    rendering = true;
 	io.emit("render");
 }
 
@@ -299,6 +296,7 @@ http.listen(3000, function() {
 
 process.on("message", function(message) {
 	if (rendering == true) {
-		io.emit("frame", JSON.parse(message));
+		io.to(JSON.parse(message).socket).emit("frame", JSON.parse(message));
+        console.log("emitting");
 	}
 });
