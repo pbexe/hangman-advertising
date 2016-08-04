@@ -39,7 +39,9 @@ setInterval(function() {
     dt++;
 
     renderer.on("message", function(frame) {
-        crop.send(JSON.stringify({ type: "frame", content: JSON.parse(frame).frame, dt: JSON.parse(frame).dt }));
+    	frame = JSON.parse(frame);
+    	// console.log(frame)
+        crop.send(JSON.stringify({ type: "frame", content: frame.frame, dt: frame.dt }));
         renderer.kill("SIGINT"); //Killing is bad, but killing processes is all in a days work, at least its not SIGKILL, because that would always be fatal - http://www.gnu.org/software/libc/manual/html_node/Termination-Signals.html
     });
 }, 1000/fps);
