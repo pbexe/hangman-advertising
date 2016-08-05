@@ -30,6 +30,9 @@ var cv = require("opencv"); //I dont want to publish my CV to the interwebs... O
 var Canvas = require("canvas");
 global.Image = Canvas.Image;
 
+var jsdom = require("jsdom").jsdom;
+global.document = jsdom("");
+
 var lowThresh = 0;
 var highThresh = 100;
 var nIters = 2;
