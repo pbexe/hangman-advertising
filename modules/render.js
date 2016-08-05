@@ -34,6 +34,23 @@ function toColour(num) {
 	return "#" + b + g + r;
 }
 
+var dots = [];
+for (var i = 0; i < 100; i++) {
+	var dot = canvas.getContext('2d');
+	dot.fillStyle = 'rgba(85, 62, 152, 0.75)';
+	dot.beginPath();
+	dot.savedX = randInt(0, width);
+	dot.savedY = randInt(0, height);
+	// console.log(dot.savedX, dot.savedY);
+	dot.savedRadius = randInt(minRadius, 10);
+	dot.direction = randInt(0, 360);
+	dot.radiusTarget = randInt(dot.savedRadius, maxRadius);
+	dot.targetDirection = (dot.savedRadius < dot.radiusTarget) ? "up" : "down";
+	dot.arc(dot.savedX, dot.savedY, dot.savedRadius, 0, Math.PI * 2, false);
+	dot.fill();
+	dots.push(dot);
+}
+
 // fs.readFile(__dirname + "/../Icon.png", function(err, data){
 	// if (err) console.log(err);
 	process.on("message", function(dt) {
@@ -44,12 +61,52 @@ function toColour(num) {
 		// context.drawImage(img, 0, 0, img.width / 4, img.height / 4);
 		// context.rotate(dt/10);
 
-		var dot = canvas.getContext('2d');
-		dot.fillStyle = 'rgba(85, 62, 152, 0.75)';
-		dot.beginPath();
-		dot.arc(dt + 200, dt + 200, 100, 0, Math.PI * 2, false);
-		dot.fill();
-		// dots.push(dot);
+		for (var dot = 0; dot < dots.length; dot++) {
+			dots[dot].clearRect(
+				dots[dot].savedX,
+				dots[dot].savedY,
+				dots[dot].savedX + dots[dot].width,
+				dots[dot].savedY + dots[dot].height
+			);
+			dots[dot].beginPath();
+			dots[dot].savedX += getXFromAngle(dots[dot].direction);
+			dots[dot].savedY += getYFromAngle(dots[dot].direction);
+			// dots[dot].moveTo(dots[dot].savedX, dots[dot].savedY);
+
+			if (dots[dot].targetDirection == "up"){
+				if (dots[dot].savedRadius >= dots[dot].radiusTarget){ // above target
+					dots[dot].radiusTarget = randInt(minRadius, dots[dot].radiusTarget);
+					dots[dot].targetDirection = "down";
+				} else {
+					dots[dot].savedRadius++;
+				}
+			} else {
+				if (dots[dot].savedRadius <= dots[dot].radiusTarget){ // below target
+					dots[dot].radiusTarget = randInt(dots[dot].radiusTarget, maxRadius);
+					dots[dot].targetDirection = "up";
+				} else {
+					dots[dot].savedRadius--;
+				}
+			}
+			dots[dot].arc(dots[dot].savedX, dots[dot].savedY, dots[dot].savedRadius, 0, Math.PI * 2, false);
+			dots[dot].fill();
+
+			var x = dots[dot].savedX;
+			var y = dots[dot].savedY;
+
+			if (x - dots[dot].savedRadius > width){		// too far to the right
+				dots[dot].direction = randInt(180, 360);
+			}
+			if (x + dots[dot].savedRadius < 0){			// too far to the left
+				dots[dot].direction = randInt(0, 180);
+			}
+			if (y - dots[dot].savedRadius > height) {		// too far to the bottom
+				dots[dot].direction = randInt(90, 270);
+			}
+			if (y + dots[dot].savedRadius < 0) {			// too far to the top
+				dots[dot].direction = randInt(90, 270);
+			}
+		}
 
 		canvas.toBuffer(function(err, buf){
 			 fs.writeFile("renders/render.png", buf, function(err){
